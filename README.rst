@@ -41,8 +41,10 @@ Screenshots
 -----------
 
 The scope
+
 .. image:: ./images/scope_photo.png
 
 And corresponding capture
+
 .. image:: ./images/screencap.png
 
