@@ -42,7 +42,7 @@ Screenshots
 
 The scope
 
-.. image:: ./images/scope_photo.png
+.. image:: ./images/scope_photo.jpg
 
 And corresponding capture
 
