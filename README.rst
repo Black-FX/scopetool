@@ -37,6 +37,12 @@ using:
 
    $ scopetool -p /dev/ttyUSB0 -s 57600 -1 -2
 
+Screenshots
+-----------
 
+The scope
+.. image:: ./images/scope_photo.png
 
+And corresponding capture
+.. image:: ./images/screencap.png
 
