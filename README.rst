@@ -33,10 +33,14 @@ Usage
 Once installed, you should be able to run the tool at the command line
 using:
 
-`usage: scopetool [-h] [-1] [-2] [--port USB_PORT] [--speed USB_SPEED]`
+```
+usage: scopetool [-h] [-1] [-2] [--port USB_PORT] [--speed USB_SPEED]
+```
 
-.. code:: console
-   $ scopetool -p /dev/ttyUSB0 -s 57600 -1 -2
+For example:
+```
+$ scopetool -p /dev/ttyUSB0 -s 57600 -1 -2
+```
 
 Screenshots
 -----------
