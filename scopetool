@@ -1,4 +1,5 @@
-#!/usr/bin/env python
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
 
 # Copyright 2020 By Darren Jones - c10k Consulting Limited, New Zealand.
 # All rights reserved.
@@ -6,7 +7,7 @@
 # and is released under the "MIT License Agreement". Please see the LICENSE
 # file that should have been included as part of this package.
 
-VERSION="0.1"
+VERSION = '0.1'
 
 import serial
 from StringIO import StringIO
@@ -16,20 +17,22 @@ import argparse
 
 
 def setup():
-    global args 
+    global args
     global scope
     global model
-    
-    parser = argparse.ArgumentParser(description="My parser")
+
+    parser = argparse.ArgumentParser(description='My parser')
     parser.add_argument('-1', dest='capture_ch1', action='store_true')
     parser.add_argument('-2', dest='capture_ch2', action='store_true')
     parser.add_argument('--port', dest='usb_port', required=True)
-    parser.add_argument('--speed', dest='usb_speed', required=True)  
+    parser.add_argument('--speed', dest='usb_speed', required=True)
     args = parser.parse_args()
-    scope=serial.Serial(args.usb_port, args.usb_speed, timeout=1)
+    scope = serial.Serial(args.usb_port, args.usb_speed, timeout=1)
     scope.flush()
+    
+    # Check we are talking to an Agilent scope, otherwise quit
 
-    scope.write("*IDN?\r\r\n")
+    scope.write('*IDN?\r\r\n')
     scope.flush()
     check = scope.read(20)
     if check is 'AGILENT TECHNOLOGIES':
@@ -37,92 +40,120 @@ def setup():
     scope.read(1)
     model = scope.read(6)
     scope.readline()
-    
+
 
 def plot_graph():
-    #Get the time base
-    scope.write(":TIM:RANG?\r\r\n")
+
+    # Get the time base
+
+    scope.write(':TIM:RANG?\r\r\n')
     scope.flush()
-    time_base= float(scope.readline())/10
+    time_base = float(scope.readline()) / 10
 
     if args.capture_ch1:
-        #Get Chan 1 range and offset
-        scope.write(":CHAN1:RANG?\r\r\n")
+
+        # Get Chan 1 range and offset
+
+        scope.write(':CHAN1:RANG?\r\r\n')
         scope.flush()
 
-        range1= float(scope.readline())
-        chan1_perdiv=range1/8
+        range1 = float(scope.readline())
+        chan1_perdiv = range1 / 8
 
-        scope.write(":CHAN1:OFFSET?\r\r\n")
+        scope.write(':CHAN1:OFFSET?\r\r\n')
         scope.flush()
 
-        offset1= float(scope.readline())
+        offset1 = float(scope.readline())
     if args.capture_ch2:
-        #Get Chan 2 range and offset
-        scope.write(":CHAN2:RANG?\r\r\n")
+
+        # Get Chan 2 range and offset
+
+        scope.write(':CHAN2:RANG?\r\r\n')
         scope.flush()
 
-        range2= float(scope.readline())
-        chan2_perdiv =range2/8
+        range2 = float(scope.readline())
+        chan2_perdiv = range2 / 8
 
-        scope.write(":CHAN2:OFFSET?\r\r\n")
+        scope.write(':CHAN2:OFFSET?\r\r\n')
         scope.flush()
 
-        offset2= float(scope.readline())
+        offset2 = float(scope.readline())
 
     if args.capture_ch1:
-        #Get Chan 1 waveform data
-        scope.write(":WAVEFORM:SOURCE CHANNEL1\r\r\n")
-        scope.write(":WAVEFORM:POINTS 2000\r\r\n")
-        scope.write(":WAVEFORM:FORMAT ASCII\r\r\n")
-        scope.write(":WAVEFORM:DATA?\r\r\n")
+
+        # Get Chan 1 waveform data
+
+        scope.write(':WAVEFORM:SOURCE CHANNEL1\r\r\n')
+        scope.write(':WAVEFORM:POINTS 2000\r\r\n')
+        scope.write(':WAVEFORM:FORMAT ASCII\r\r\n')
+        scope.write(':WAVEFORM:DATA?\r\r\n')
         scope.flush()
-        #Nibble the 10 byte header and ignore it
-        scope.read(10);
-        #The rest of the data is basically a sinlge row CSV
-        csv_data= scope.readline()
-        #Parse the rows for the graph
+
+        # Nibble the 10 byte header and ignore it
+
+        scope.read(10)
+
+        # The rest of the data is basically a sinlge row CSV
+
+        csv_data = scope.readline()
+
+        # Parse the rows for the graph
+
         x1 = []
         y1 = []
         i = 0
         f = StringIO(csv_data)
         raw_data = csv.reader(f, delimiter=',')
         for row in raw_data:
-                for column in row:
-                    x1.append(i)
-                    #Offset the data by the set offset to match device output
-                    y1.append(float(column)-offset1)
-                    i=i+1
-        #Flush any junk
-        scope.flush()
-    
-    if args.capture_ch2:
-        #Get Chan 2 waveform data
-        scope.write(":WAVEFORM:SOURCE CHANNEL2\r\r\n")
-        scope.write(":WAVEFORM:POINTS 2000\r\r\n")
-        scope.write(":WAVEFORM:FORMAT ASCII\r\r\n")
-        scope.write(":WAVEFORM:DATA?\r\r\n")
-        #Nibble the 10 byte header and ignore it
-        scope.read(10);
+            for column in row:
+                x1.append(i)
 
-        csv_data2= scope.readline()
-        #Parse the rows for the graph
+                    # Offset the data by the set offset to match device output
+
+                y1.append(float(column) - offset1)
+                i = i + 1
+
+        # Flush any junk
+
+        scope.flush()
+
+    if args.capture_ch2:
+
+        # Get Chan 2 waveform data
+
+        scope.write(':WAVEFORM:SOURCE CHANNEL2\r\r\n')
+        scope.write(':WAVEFORM:POINTS 2000\r\r\n')
+        scope.write(':WAVEFORM:FORMAT ASCII\r\r\n')
+        scope.write(':WAVEFORM:DATA?\r\r\n')
+
+        # Nibble the 10 byte header and ignore it
+
+        scope.read(10)
+
+        csv_data2 = scope.readline()
+
+        # Parse the rows for the graph
+
         x2 = []
         y2 = []
         i = 0
         f = StringIO(csv_data2)
         raw_data = csv.reader(f, delimiter=',')
         for row in raw_data:
-                for column in row:
-                    x2.append(i)
-                    #Offset the data by the set offset to match device output
-                    y2.append(float(column)-offset2)
-                    i=i+1
+            for column in row:
+                x2.append(i)
 
+                    # Offset the data by the set offset to match device output
 
-    #Plot the graph
-    fig, ax = plt.subplots()
-    #Only do a 2nd Y Axis if we have 2 chans
+                y2.append(float(column) - offset2)
+                i = i + 1
+
+    # Plot the graph
+
+    (fig, ax) = plt.subplots()
+
+    # Only do a 2nd Y Axis if we have 2 chans
+
     if args.capture_ch2:
         ax2 = ax.twinx()
 
@@ -135,27 +166,40 @@ def plot_graph():
 
     if args.capture_ch2:
         ax2.get_xaxis().set_visible(False)
-    #Set all the titles
-    fig.canvas.set_window_title("scopetool v"+VERSION+" Copyright 2020 Darren Jones")
-    fig.suptitle('Agilent ' + model + ' capture - Time Base :' +str(time_base)+'s', color='#ffffff')
 
-    ax.set_title('CH1: '+str(chan1_perdiv)+"v/div Offset:"+str(offset1), loc='left', color='#ffffff')
+    # Set all the titles
+
+    fig.canvas.set_window_title('scopetool v' + VERSION
+                                + ' Copyright 2020 Darren Jones')
+    fig.suptitle('Agilent ' + model + ' capture - Time Base :'
+                 + str(time_base) + 's', color='#ffffff')
+
+    ax.set_title('CH1: ' + str(chan1_perdiv) + 'v/div Offset:'
+                 + str(offset1), loc='left', color='#ffffff')
     if args.capture_ch2:
-        ax2.set_title('CH2: '+str(chan2_perdiv)+"v/div Offset:"+str(offset2), loc='right', color='#ffff00')
+        ax2.set_title('CH2: ' + str(chan2_perdiv) + 'v/div Offset:'
+                      + str(offset2), loc='right', color='#ffff00')
 
-    #Plot the data
-    ax.plot(x1,y1, label='CH1', color='#ffffff')
+    # Plot the data
+
+    ax.plot(x1, y1, label='CH1', color='#ffffff')
     if args.capture_ch2:
-        ax2.plot(x2,y2, label='CH2', color='#ffff00')
-        ax2.set_ylim(bottom=float("-"+str(int(range2/2))), top=(range2/2), auto=False)
-    ax.set_ylim(bottom=float("-"+str(int(range1/2))), top=(range1/2), auto=False)
+        ax2.plot(x2, y2, label='CH2', color='#ffff00')
+        ax2.set_ylim(bottom=float('-' + str(int(range2 / 2))),
+                     top=range2 / 2, auto=False)
+    ax.set_ylim(bottom=float('-' + str(int(range1 / 2))), top=range1
+                / 2, auto=False)
 
-    #Show the plot
+    # Show the plot
+
     plt.show()
 
+
 def main():
-    setup() 
+    setup()
     plot_graph()
-  
-if __name__== "__main__":
-  main()
+
+
+if __name__ == '__main__':
+    main()
+
