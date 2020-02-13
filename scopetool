@@ -84,7 +84,7 @@ def plot_graph():
         # Get Chan 1 waveform data
 
         scope.write(':WAVEFORM:SOURCE CHANNEL1\r\r\n')
-        scope.write(':WAVEFORM:POINTS 2000\r\r\n')
+        #scope.write(':WAVEFORM:POINTS 2000\r\r\n')
         scope.write(':WAVEFORM:FORMAT ASCII\r\r\n')
         scope.write(':WAVEFORM:DATA?\r\r\n')
         scope.flush()
@@ -122,7 +122,7 @@ def plot_graph():
         # Get Chan 2 waveform data
 
         scope.write(':WAVEFORM:SOURCE CHANNEL2\r\r\n')
-        scope.write(':WAVEFORM:POINTS 2000\r\r\n')
+        #scope.write(':WAVEFORM:POINTS 2000\r\r\n')
         scope.write(':WAVEFORM:FORMAT ASCII\r\r\n')
         scope.write(':WAVEFORM:DATA?\r\r\n')
 
