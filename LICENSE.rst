@@ -1,6 +1,6 @@
 The MIT License
 
-Copyright 2012, c10k Consulting Limited, NZ
+Copyright 2022, Darren Jones (nz.darren.jones@gmail.com)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
